@@ -18,11 +18,12 @@ import {
     Lspidy_change_step_shoot,
     Lspidy_sliding,
 } from '../static/images.js'; 
+const audio = new Audio("../assets/audio/shooting-web.mp3");
 
 export default class Spidy {
     constructor(context) {
         this.ctx = context;
-        this.x = 0;
+        this.x = 40;
         this.y = 300;
         this.velocityX = 0;
         this.velocityY = 0;
@@ -105,7 +106,7 @@ export default class Spidy {
     }
 
     moveRight() {
-        this.velocityX = 5;
+        this.velocityX = 0.001;
         this.direction = 'right';
     }
 
@@ -117,12 +118,14 @@ export default class Spidy {
     }
 
     shoot() {
+
         this.isShooting = true;
         this.draw();
         setTimeout(() => {
             this.isShooting = false;
             this.draw();
         }, 200);
+        
     }
 
     update() {
@@ -141,7 +144,7 @@ export default class Spidy {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        // this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         let currentImage;
 
         if (this.isShooting) {

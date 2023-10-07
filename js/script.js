@@ -1,20 +1,24 @@
 import Spidy from "./Models/spidy.js";
 import { health } from "./config.js";
+import {drawEnemy} from "./enemies.js";
+
+
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
-
+var count=1;
 canvas.width = 1100;
 canvas.height = 700;
 
 const spidy_standing = new Image();
-spidy_standing.src = "../../assets/spidy/standing.png"
+spidy_standing.src = "../../assets/spidy/standing.png";
+
 
 
 const backgroundImage = new Image();
 backgroundImage.src = "../assets/background/background.png";
 
-console.log(backgroundImage);
+
 
 const buildingImage = new Image();
 buildingImage.src = "../assets/background/building.png";
@@ -24,7 +28,7 @@ let backgroundY = 0;
 
 const minWidth = 200;
 const maxWidth = 500;
-const backgroundSpeed = 5; // Background speed (slower than buildings)
+const backgroundSpeed = 5; // Background speed 
 const buildingSpeed = 11; // Buildings speed
 const buildingSpacing = 90; // spacing 
 
@@ -46,7 +50,7 @@ function Building(x, y, width, height) {
 const buildings = [];
 
 function generateBuildings() {
-    let x = 0; // Start adding buildings from the left edge
+    let x = 0; 
     
     while (x < maxWidth) { 
         const height = getRandomHeight();
@@ -54,7 +58,7 @@ function generateBuildings() {
         const y = canvas.height -height;
         const building = new Building(x, y, width, height);
         buildings.push(building);
-        x += (width + buildingSpacing); // Adjust the spacing
+        x += (width + buildingSpacing); 
         
        
     }
@@ -75,18 +79,18 @@ function draw(context) {
     }
 
     for (const building of buildings) {
+        
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
-         // Move the buildings to the left
+       if(count % 3 === 0){
+        drawEnemy(context,building.x, building.y, building.width);
+       }
+       count++;
+         
     }
 
-    // Remove buildings that have moved off the screen
-    // buildings.forEach((building, index) => {
-    //     if (building.x + building.width < 0) {
-    //         buildings.splice(index, 1);
-    //     }
-    // });
+    
 
-    // Generate new buildings 
+    
     const lastBuilding = buildings[buildings.length - 1];
     if (lastBuilding.x + lastBuilding.width <= canvas.width) {
         const width = getRandomWidth();
@@ -100,6 +104,7 @@ function draw(context) {
 function game() {
     draw(context);
     spidy.update();
+    
     requestAnimationFrame(game);
 }
 
@@ -107,10 +112,14 @@ window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowRight') {
         backgroundX -= backgroundSpeed;
         for (const building of buildings) {
-            building.x -= buildingSpeed; // Move the buildings with the background
-        } // Decrement when moving right
+            building.x -= buildingSpeed; 
+        } 
     }
     
 });
+    
+
 
 game();
+
+
