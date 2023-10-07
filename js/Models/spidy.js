@@ -23,7 +23,7 @@ export default class Spidy {
     constructor(context) {
         this.ctx = context;
         this.x = 0;
-        this.y = 300;
+        this.y = 200;
         this.velocityX = 0;
         this.velocityY = 0;
         this.isJumping = false;
@@ -100,19 +100,19 @@ export default class Spidy {
     }
 
     moveLeft() {
-        this.velocityX = -5;
+        this.velocityX = -3;
         this.direction = 'left';
     }
 
     moveRight() {
-        this.velocityX = 5;
+        this.velocityX = 3;
         this.direction = 'right';
     }
 
     jump() {
         if (!this.isJumping) {
             this.isJumping = true;
-            this.velocityY = -10;
+            this.velocityY = -15;
         }
     }
 
@@ -125,14 +125,15 @@ export default class Spidy {
         }, 150);
     }
 
-    update() {
+    update(base,onBuilding) {
+        if(this.x+this.velocityX < 200 && this.x+this.velocityX > 0)
         this.x += this.velocityX;
         this.y += this.velocityY;
 
-        if (this.y < 300) {
+        if (this.y < base || !onBuilding) {
             this.velocityY += 1;
         } else {
-            this.y = 300;
+            this.y = base;
             this.velocityY = 0;
             this.isJumping = false;
         }
@@ -141,7 +142,6 @@ export default class Spidy {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         let currentImage;
 
         if (this.isShooting) {
