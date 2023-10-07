@@ -4,12 +4,12 @@ export default class Block {
         this.image = image;
         this.x = x;
         this.y = y;
-        this.width = width;l
+        this.width = width;
         this.height = height;
     }
 
     draw(context){
-        context.drawImage(image,this.x,this.y,this.width,this.height);
+        context.drawImage(this.image,this.x,this.y,this.width,this.height);
     }
 
 }
