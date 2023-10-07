@@ -10,8 +10,3 @@ body {
     min-height: 100vh;
 }
 
-/*canvas border*/
-
-canvas {
-    border: 1px solid #ffffff;
-}

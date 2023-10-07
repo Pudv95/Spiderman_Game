@@ -122,7 +122,7 @@ export default class Spidy {
         setTimeout(() => {
             this.isShooting = false;
             this.draw();
-        }, 200);
+        }, 150);
     }
 
     update() {
