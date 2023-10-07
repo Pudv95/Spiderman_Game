@@ -25,7 +25,7 @@ const minWidth = 200;
 const maxWidth = 500;
 const backgroundSpeed = 1;
 const buildingSpeed = 6; 
-const buildingSpacing = 150; 
+const buildingSpacing = 120; 
 
 function getRandomHeight() {
     return Math.random() * (200 - 150) + 150;
