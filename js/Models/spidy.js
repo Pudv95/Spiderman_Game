@@ -17,6 +17,7 @@ import {
     Lspidy_right_step_shoot,
     Lspidy_change_step_shoot,
     Lspidy_sliding,
+    webshoot,
 } from '../static/images.js'; 
 
 export default class Spidy {
@@ -28,6 +29,7 @@ export default class Spidy {
         this.velocityY = 0;
         this.isJumping = false;
         this.isShooting = false;
+        this.webs = [];
         this.direction = 'right';
         this.images = {
             standing: {
@@ -90,14 +92,26 @@ export default class Spidy {
         });
 
         window.addEventListener('keyup', (e) => {
+            console.log(e.key);
             switch (e.key) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
                     this.velocityX = 0;
                     break;
+                case ' ':
+                    this.shooting = false;
+                    break;
             }
         });
     }
+
+    web = {
+        x: 0,
+        y: 0,
+        width: 15,
+        height: 15,
+        speed: 8,
+    };
 
     moveLeft() {
         this.velocityX = -3;
@@ -117,19 +131,22 @@ export default class Spidy {
     }
 
     shoot() {
-        this.isShooting = true;
-        this.draw();
-        setTimeout(() => {
-            this.isShooting = false;
-            this.draw();
-        }, 150);
+        this.shooting = true;
+        const newWeb = {
+            x: this.x + (this.direction === 'right' ? 50 : -this.web.width),
+            y: this.y + 20,
+            direction: this.direction,
+        };
+
+        this.webs.push(newWeb);
     }
-
-    update(base,onBuilding) {
-        if(this.x+this.velocityX < 200 && this.x+this.velocityX > 0)
-        this.x += this.velocityX;
+    
+    update(base, onBuilding) {
+        if (this.x + this.velocityX < 200 && this.x + this.velocityX > 0) {
+            this.x += this.velocityX;
+        }
         this.y += this.velocityY;
-
+    
         if (this.y < base || !onBuilding) {
             this.velocityY += 1;
         } else {
@@ -137,14 +154,28 @@ export default class Spidy {
             this.velocityY = 0;
             this.isJumping = false;
         }
+    
+        for (let i = this.webs.length - 1; i >= 0; i--) {
+            const web = this.webs[i];
+            web.x += (web.direction === 'right' ? 1 : -1) * this.web.speed;
 
+            if (
+                web.x > this.ctx.canvas.width ||
+                web.x + this.web.width < 0
+            ) {
+                this.webs.splice(i, 1);
+            }
+        }
+    
         this.draw();
     }
+    
 
     draw() {
         let currentImage;
 
-        if (this.isShooting) {
+        if (this.shooting) {
+            
             currentImage = this.images.shooting[this.direction];
         } else if (this.isJumping) {
             currentImage = this.images.jumping[this.direction];
@@ -154,6 +185,10 @@ export default class Spidy {
             currentImage = this.images.leftSteps[Math.floor(Date.now() / 200) % 3];
         } else {
             currentImage = this.images.standing[this.direction];
+        }
+
+        for (const web of this.webs) {
+            this.ctx.drawImage(webshoot, web.x, web.y, 20, 20);
         }
 
         this.ctx.drawImage(currentImage, this.x, this.y, 50, 50);
