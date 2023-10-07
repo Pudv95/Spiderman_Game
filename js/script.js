@@ -1,8 +1,7 @@
 import Spidy from "./Models/spidy.js";
 import { health } from "./config.js";
 
-const canvas = document.getElementsByTagName("canvas")[0]
-
+const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
 
 canvas.width = 1100;
@@ -60,10 +59,9 @@ function generateBuildings() {
 
 }
 
-generateBuildings();
+
 const spidy = new Spidy(context);
-
-
+generateBuildings(); 
 
 function draw(context) {
     context.clearRect(0, 0, canvas.width, canvas.height);
