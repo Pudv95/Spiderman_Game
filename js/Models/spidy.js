@@ -19,6 +19,7 @@ import {
     Lspidy_sliding,
     webshoot,
 } from '../static/images.js'; 
+const audio = new Audio("../assets/audio/shooting-web.mp3");
 
 export default class Spidy {
     constructor(context) {
@@ -139,6 +140,8 @@ export default class Spidy {
         };
 
         this.webs.push(newWeb);
+
+        
     }
     
     update(base, onBuilding) {

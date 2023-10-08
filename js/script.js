@@ -1,14 +1,18 @@
 import Spidy from "./Models/spidy.js";
 import { health } from "./config.js";
+import {drawEnemy} from "./enemies.js";
+
+
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
-
+var count=1;
 canvas.width = 1100;
 canvas.height = 700;
 
 const spidy_standing = new Image();
-spidy_standing.src = "../../assets/spidy/standing.png"
+spidy_standing.src = "../../assets/spidy/standing.png";
+
 
 
 const backgroundImage = new Image();
@@ -26,6 +30,7 @@ const maxWidth = 500;
 const backgroundSpeed = 1;
 const buildingSpeed = 6; 
 const buildingSpacing = 120; 
+
 
 function getRandomHeight() {
     return Math.random() * (200 - 150) + 150;
@@ -47,7 +52,6 @@ const buildings = [];
 
 function generateBuildings() {
     let x = 0;
-    
     while (x < maxWidth) { 
         const height = getRandomHeight();
         const width = getRandomWidth();
@@ -75,9 +79,18 @@ function draw(context) {
     }
 
     for (const building of buildings) {
+        
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
+       if(count % 3 === 0){
+        drawEnemy(context,building.x, building.y, building.width);
+       }
+       count++;
+         
     }
 
+    
+
+    
     const lastBuilding = buildings[buildings.length - 1];
     if (lastBuilding.x + lastBuilding.width <= canvas.width) {
         const width = getRandomWidth();
@@ -160,7 +173,22 @@ window.addEventListener('keyup', (event) => {
     if (event.key == 'ArrowRight') {
         spidyIsMoving = false;
         console.log(`${spidy.x} and ${buildings[i].x} and i = ${i}`);
+        spidy.update();
     }
 });
 
+
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') {
+        backgroundX -= backgroundSpeed;
+        for (const building of buildings) {
+            building.x -= buildingSpeed; 
+        } 
+    }
+});
+
+
+
 game();
+
+
