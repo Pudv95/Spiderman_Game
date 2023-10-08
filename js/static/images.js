@@ -118,3 +118,7 @@ webshoot.src = "../../assets/spidy/web.png"
 
 export const webCartridge = new Image();
 webCartridge.src = "../../assets/power_ups/webCartridge.png"
+// knife
+
+export const knife = new Image();
+knife.src = "../../assets/enemy/knife.png"
