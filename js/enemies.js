@@ -1,10 +1,10 @@
+import Block from "./Models/block.js"
 
+export default class Enemy extends Block{
 
+    constructor(image,x,y,width,height,health){
+        super(image,x,y,width,height);
+        this.health = health;
+    }
 
-// export function drawEnemy(context,x, y, width){
-// //    if(i==true){
-//     context.drawImage(enemyImage,x+(width/2),y-50,50,50);
-
-
-// }
-    
+};

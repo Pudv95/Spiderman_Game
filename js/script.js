@@ -1,8 +1,9 @@
 import Spidy from "./Models/spidy.js";
-import { health, maxBullets } from "./config.js";
+import { health, maxBullets, maxEnemyHealth } from "./config.js";
 import { webCartridge } from "./static/images.js";
 import Block from "./Models/block.js"
 import { knife } from "./static/images.js";
+import Enemy from "./enemies.js";
 
 
 
@@ -52,7 +53,7 @@ class Building {
         this.width = width;
         this.height = height;
         this.hasEnemy = Math.random() < 0.30;
-        this.hasWebCartridge = Math.random() < 0.5;
+        this.hasWebCartridge = Math.random() < 0.05;
         this.lastBulletTime = 0;
     }
 }
@@ -96,8 +97,9 @@ function draw(context,currentTime) {
 
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
         if (building.hasEnemy) {
-            const enemy = new Block(enemyImage,building.x+building.width/2,building.y-60,60,60);
-            enemy.draw(context);
+            const enemy = new Enemy(enemyImage,building.x+building.width/2,building.y-60,60,60,maxEnemyHealth);
+            if(enemy.health>0)
+                enemy.draw(context);
             enemies.push(enemy);
 
             if (currentTime - building.lastBulletTime >= 2000 && building.x < 800) {
@@ -176,6 +178,7 @@ function resetGame() {
     document.addEventListener("keyup",(e)=>{
         if(e.key == 'Enter'){
             playing = true;
+            spidy.health = 10;
             game();
         }
     })
@@ -183,7 +186,6 @@ function resetGame() {
 
 var spidyIsMoving = false;
 var i = 0;
-var j=0;
 
 var playing = true;
 
@@ -202,7 +204,7 @@ function game(currentTime) {
     }
     if (cartridge.length > 0) {
         const firstCartridge = cartridge[0];
-        if(firstCartridge.y < spidy.y + 30 && firstCartridge.y + 20 > spidy.y){
+        if(firstCartridge.y < spidy.y + 30 && firstCartridge.y + 20 > spidy.y && spidy.x>firstCartridge.x && spidy.x<firstCartridge.x+30){
                 cartridge.shift();
                 spidy.bullets = maxBullets;
         }

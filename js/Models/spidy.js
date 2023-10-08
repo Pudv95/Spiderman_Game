@@ -178,8 +178,9 @@ export default class Spidy {
                 };
     
                 if (this.collides(web, enemyRect)) {
+                    console.log(enemy.health);
                     this.webs.splice(i, 1);
-                    enemies.splice(enemies.indexOf(enemy), 1);
+                    enemy.health--;
                 }
             }
 
