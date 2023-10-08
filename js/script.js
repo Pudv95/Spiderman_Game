@@ -8,7 +8,6 @@ import { knife } from "./static/images.js";
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
-var count = 1;
 canvas.width = 1100;
 canvas.height = 700;
 
@@ -53,6 +52,7 @@ class Building {
         this.width = width;
         this.height = height;
         this.hasEnemy = Math.random() < 0.30;
+        this.hasWebCartridge = Math.random() < 0.5;
         this.lastBulletTime = 0;
     }
 }
@@ -75,6 +75,7 @@ function generateBuildings() {
 }
 
 var bullets = [];
+var cartridge = [];
 
 const spidy = new Spidy(context,health,maxBullets);
 generateBuildings(); 
@@ -89,6 +90,7 @@ function draw(context,currentTime) {
     if (backgroundX <= -canvas.width) {
         backgroundX = 0;
     }
+    cartridge= [];
     enemies = [];
     for (const building of buildings) {
 
@@ -103,6 +105,11 @@ function draw(context,currentTime) {
                 bullets.push(bullet);
                 building.lastBulletTime = currentTime;
             }
+        }
+        if(building.hasWebCartridge && !building.hasEnemy){
+            const webs = new Block(webCartridge,building.x+building.width/2,building.y-150,120,60);
+            cartridge.push(webs);
+            webs.draw(context);
         }
 
     }
@@ -146,11 +153,14 @@ function moveBackground() {
     }
 }
 function resetGame() {
+    playing = false;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
     context.font = "30px Comic Sans MS";
     bullets = [];
+    spidy.x = -50;
+    spidy.bullets = maxBullets;
     context.fillStyle = "white";
     context.fillText("Nice try", 450, 300);
     context.fillText("Press Enter To Play again", 370, 350);
@@ -173,6 +183,7 @@ function resetGame() {
 
 var spidyIsMoving = false;
 var i = 0;
+var j=0;
 
 var playing = true;
 
@@ -189,20 +200,30 @@ function game(currentTime) {
     if (buildings[i].x + buildings[i].width < 220) {
         i++;
     }
-    // console.log(spidy.y);
+    if (cartridge.length > 0) {
+        const firstCartridge = cartridge[0];
+        if(firstCartridge.y < spidy.y + 30 && firstCartridge.y + 20 > spidy.y){
+                cartridge.shift();
+                spidy.bullets = maxBullets;
+        }
+    }
+
     if (spidy.y > 1100) {
-        playing = false;
         resetGame();
     }
     bullets = bullets.filter((bullet) => {
         bullet.draw(context);
-    
+
         if (spidyIsMoving) {
             bullet.x -= 10;
         } else {
             bullet.x -= 5;
         }
             if ( bullet.x > spidy.x && bullet.x < spidy.x + 30 && bullet.y > spidy.y && bullet.y < spidy.y+50) {
+                spidy.health--;
+                if(spidy.health == 0){
+                    resetGame();
+                }
             return false;
         }
     
@@ -224,7 +245,6 @@ window.addEventListener('keydown', (event) => {
 window.addEventListener('keyup', (event) => {
     if (event.key == 'ArrowRight') {
         spidyIsMoving = false;
-        console.log(`${spidy.x} and ${buildings[i].x} and i = ${i}`);
         spidy.update();
     }
 });

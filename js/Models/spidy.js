@@ -85,7 +85,10 @@ export default class Spidy {
                     this.jump();
                     break;
                 case ' ':
+                    if(this.bullets > 0){
                     this.shoot();
+                    this.bullets--;
+                }
                     break;
             }
         });
@@ -145,7 +148,6 @@ export default class Spidy {
             rect1.x > rect2.x && rect1.x<rect2.x+30 &&
             rect1.y > rect2.y && rect1.y < rect2.y + rect2.height
         ){
-            console.log("Me is here!!");
             return true;
         }
         else{ return false; }
