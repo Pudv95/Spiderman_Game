@@ -8,7 +8,7 @@ import {
     spidy_left_step_shoot,
     spidy_right_step_shoot,
     spidy_change_step_shoot,
-    spidy_sliding,
+    spidy_health,
     Lspidy_standing,
     Lspidy_jumping,
     Lspidy_shooting,
@@ -16,18 +16,23 @@ import {
     Lspidy_left_step_shoot,
     Lspidy_right_step_shoot,
     Lspidy_change_step_shoot,
-    Lspidy_sliding,
+    webshoot,
 } from '../static/images.js'; 
+const audio = new Audio("../assets/audio/shooting-web.mp3");
 
 export default class Spidy {
-    constructor(context) {
+    constructor(context,health,bullets) {
+
         this.ctx = context;
+        this.health = health;
         this.x = 0;
-        this.y = 300;
+        this.y = 200;
         this.velocityX = 0;
         this.velocityY = 0;
         this.isJumping = false;
         this.isShooting = false;
+        this.webs = [];
+        this.bullets = bullets;
         this.direction = 'right';
         this.images = {
             standing: {
@@ -59,11 +64,7 @@ export default class Spidy {
             changeStepShooting: {
                 right: spidy_change_step_shoot,
                 left: Lspidy_change_step_shoot,
-            },
-            sliding: {
-                right: spidy_sliding,
-                left: Lspidy_sliding,
-            },
+            }
         };
 
         this.draw = this.draw.bind(this); 
@@ -84,7 +85,10 @@ export default class Spidy {
                     this.jump();
                     break;
                 case ' ':
+                    if(this.bullets > 0){
                     this.shoot();
+                    this.bullets--;
+                }
                     break;
             }
         });
@@ -95,9 +99,20 @@ export default class Spidy {
                 case 'ArrowRight':
                     this.velocityX = 0;
                     break;
+                case ' ':
+                    this.shooting = false;
+                    break;
             }
         });
     }
+
+    web = {
+        x: 0,
+        y: 0,
+        width: 15,
+        height: 15,
+        speed: 10,
+    };
 
     moveLeft() {
         this.velocityX = -5;
@@ -112,39 +127,79 @@ export default class Spidy {
     jump() {
         if (!this.isJumping) {
             this.isJumping = true;
-            this.velocityY = -10;
+            this.velocityY = -15;
         }
     }
 
     shoot() {
-        this.isShooting = true;
-        this.draw();
-        setTimeout(() => {
-            this.isShooting = false;
-            this.draw();
-        }, 200);
+        this.shooting = true;
+        const newWeb = {
+            x: this.x + (this.direction === 'right' ? 50 : -this.web.width),
+            y: this.y + 20,
+            direction: this.direction,
+        };
+
+        this.webs.push(newWeb);
+        
     }
 
-    update() {
-        this.x += this.velocityX;
+    collides(rect1, rect2) {
+        if(
+            rect1.x > rect2.x && rect1.x<rect2.x+30 &&
+            rect1.y > rect2.y && rect1.y < rect2.y + rect2.height
+        ){
+            return true;
+        }
+        else{ return false; }
+    }
+    
+    update(base, onBuilding, enemies) {
+        if (this.x + this.velocityX < 200 && this.x + this.velocityX > 0) {
+            this.x += this.velocityX;
+        }
         this.y += this.velocityY;
-
-        if (this.y < 300) {
+        if (this.y < base || !onBuilding) {
             this.velocityY += 1;
         } else {
-            this.y = 300;
+            this.y = base;
             this.velocityY = 0;
             this.isJumping = false;
         }
+        for (let i = this.webs.length - 1; i >= 0; i--) {
+            const web = this.webs[i];
+            web.x += (web.direction === 'right' ? 1 : -1) * this.web.speed;
 
+            for (var enemy of enemies) {
+                const enemyRect = {
+                    x: enemy.x,
+                    y: enemy.y,
+                    width: enemy.width,
+                    height: enemy.height,
+                };
+    
+                if (this.collides(web, enemyRect)) {
+                    console.log(enemy.health);
+                    this.webs.splice(i, 1);
+                    enemy.health--;
+                }
+            }
+
+            if (
+                web.x > this.ctx.canvas.width ||
+                web.x + this.web.width < 0
+            ) {
+                this.webs.splice(i, 1);
+            }
+        }
+    
         this.draw();
     }
 
+
     draw() {
-        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         let currentImage;
 
-        if (this.isShooting) {
+        if (this.shooting) {
             currentImage = this.images.shooting[this.direction];
         } else if (this.isJumping) {
             currentImage = this.images.jumping[this.direction];
@@ -155,6 +210,26 @@ export default class Spidy {
         } else {
             currentImage = this.images.standing[this.direction];
         }
+
+        for (const web of this.webs) {
+            this.ctx.drawImage(webshoot, web.x, web.y, 20, 20);
+        }
+
+
+        const heartSize = 30;
+        const heartPadding = 4;
+
+        for (let i = 0; i < this.health; i++) {
+            const heartX = (i+1) * (heartSize + heartPadding);
+            const heartY = 40;
+
+            this.ctx.drawImage(spidy_health, heartX, heartY, heartSize, heartSize);
+        }
+
+        this.ctx.drawImage(webshoot,500,40,50,50);
+        this.ctx.font = "30px Comic Sans MS";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(` - ${this.bullets}`, 550,74);
 
         this.ctx.drawImage(currentImage, this.x, this.y, 50, 50);
     }
