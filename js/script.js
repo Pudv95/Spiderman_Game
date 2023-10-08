@@ -10,6 +10,9 @@ var count=1;
 canvas.width = 1100;
 canvas.height = 700;
 
+const audio = new Audio("../assets/audio/60-theme-song.mp3");
+
+
 const spidy_standing = new Image();
 spidy_standing.src = "../../assets/spidy/standing.png";
 
@@ -68,7 +71,7 @@ const spidy = new Spidy(context);
 generateBuildings(); 
 
 function draw(context) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    // context.clearRect(0, 0, canvas.width, canvas.height);
     
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
@@ -104,11 +107,13 @@ function draw(context) {
 function game() {
     draw(context);
     spidy.update();
+  
     
     requestAnimationFrame(game);
 }
 
 window.addEventListener('keydown', (event) => {
+    audio.play();
     if (event.key === 'ArrowRight') {
         backgroundX -= backgroundSpeed;
         for (const building of buildings) {
@@ -121,5 +126,6 @@ window.addEventListener('keydown', (event) => {
 
 
 game();
+
 
 

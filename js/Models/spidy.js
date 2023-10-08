@@ -1,3 +1,4 @@
+
 import {
     spidy_standing,
     leftSteps,
@@ -18,7 +19,6 @@ import {
     Lspidy_change_step_shoot,
     Lspidy_sliding,
 } from '../static/images.js'; 
-const audio = new Audio("../assets/audio/shooting-web.mp3");
 
 export default class Spidy {
     constructor(context) {
@@ -66,6 +66,8 @@ export default class Spidy {
                 left: Lspidy_sliding,
             },
         };
+
+      
 
         this.draw = this.draw.bind(this); 
 
@@ -118,14 +120,16 @@ export default class Spidy {
     }
 
     shoot() {
-
-        this.isShooting = true;
-        this.draw();
-        setTimeout(() => {
-            this.isShooting = false;
+        if (!this.isShooting) {
+            this.isShooting = true;
+            const audio = new Audio("../assets/audio/shooting-web.mp3");
+            audio.play();
             this.draw();
-        }, 200);
-        
+            setTimeout(() => {
+                this.isShooting = false;
+                this.draw();
+            }, 200);
+        }
     }
 
     update() {
