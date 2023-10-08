@@ -1,5 +1,6 @@
 import Spidy from "./Models/spidy.js";
-import { health } from "./config.js";
+import { health, maxBullets } from "./config.js";
+import { webCartridge } from "./static/images.js";
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
@@ -28,7 +29,7 @@ const buildingSpeed = 6;
 const buildingSpacing = 120; 
 
 function getRandomHeight() {
-    return Math.random() * (200 - 150) + 150;
+    return Math.random() * (50) + 150;
 }
 
 
@@ -60,7 +61,7 @@ function generateBuildings() {
 }
 
 
-const spidy = new Spidy(context);
+const spidy = new Spidy(context,health,maxBullets);
 generateBuildings(); 
 
 function draw(context) {
@@ -86,7 +87,10 @@ function draw(context) {
         const y = canvas.height - height;
         buildings.push(new Building(x, y, width, height));
     }
+    
 }
+
+
 
 function isSpidyOnBuilding(buildings, spidy) {
     const spidyMidpoint = spidy.x + 25;
@@ -114,14 +118,25 @@ function resetGame(){
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
-    spidy.x = - 50;
-    spidy.y = -50;
-    ctx.font = "30px Comic Sans MS";
-        ctx.fillStyle = "white";
-        ctx.fillText("Nice try", 450, 300);
-        ctx.fillText("Press Enter To Play again", 370, 350);
+    context.font = "30px Comic Sans MS";
+    context.fillStyle = "white";
+    context.fillText("Nice try", 450, 300);
+    context.fillText("Press Enter To Play again", 370, 350);
+    document.addEventListener("keydown",(e)=>{
+        if(e.key == 'Enter' && !playing){
+            buildings.length = 0    ;
+            generateBuildings();
+            spidy.y = buildings[0].y - 50;
+            spidy.x = 50;
+            i = 0;
+        }
+    })
+    document.addEventListener("keyup",(e)=>{
+        if(e.key == 'Enter'){
+            playing = true;
+        }
+    })
 
-        document.addEventListener("key")
 }
 
 var spidyIsMoving = false;
@@ -134,6 +149,7 @@ function game() {
     if(spidyIsMoving){
         moveBackground();
     }
+
     if(buildings[0].x + buildings[0].width < 0){
         buildings.shift();
         i--;
@@ -141,14 +157,11 @@ function game() {
     if(buildings[i].x + buildings[i].width < 220){
         i++;
     }
-    // console.log(spidy.y);
-    if(spidy.y >1100){
+    if(spidy.y > 1100){
         playing = false;
         resetGame();
     }
     spidy.update(buildings[i].y - 50,isSpidyOnBuilding(buildings,spidy));
-    if(playing)
-        requestAnimationFrame(game);
 }
 
 window.addEventListener('keydown', (event) => {
@@ -159,8 +172,9 @@ window.addEventListener('keydown', (event) => {
 window.addEventListener('keyup', (event) => {
     if (event.key == 'ArrowRight') {
         spidyIsMoving = false;
-        console.log(`${spidy.x} and ${buildings[i].x} and i = ${i}`);
     }
 });
 
-game();
+if(playing){
+    setInterval(game,1000/60);
+}

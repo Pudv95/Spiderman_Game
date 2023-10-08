@@ -107,13 +107,14 @@ Lspidy_change_step_shoot.src = "../../assets/spidy/Lshoot-change-step.png"
 
 //slide
 
-export const spidy_sliding = new Image();
-spidy_sliding.src = "../../assets/spidy/slide.png"
+export const spidy_health = new Image();
+spidy_health.src = "../../assets/spidy/heart.png"
 
-export const Lspidy_sliding = new Image();
-Lspidy_sliding.src = "../../assets/spidy/Lslide.png"
 
 // web
 
 export const webshoot = new Image();
 webshoot.src = "../../assets/spidy/web.png"
+
+export const webCartridge = new Image();
+webCartridge.src = "../../assets/power_ups/webCartridge.png"

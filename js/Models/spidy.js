@@ -8,7 +8,7 @@ import {
     spidy_left_step_shoot,
     spidy_right_step_shoot,
     spidy_change_step_shoot,
-    spidy_sliding,
+    spidy_health,
     Lspidy_standing,
     Lspidy_jumping,
     Lspidy_shooting,
@@ -16,13 +16,14 @@ import {
     Lspidy_left_step_shoot,
     Lspidy_right_step_shoot,
     Lspidy_change_step_shoot,
-    Lspidy_sliding,
     webshoot,
 } from '../static/images.js'; 
 
 export default class Spidy {
-    constructor(context) {
+    constructor(context,health,bullets) {
+
         this.ctx = context;
+        this.health = health;
         this.x = 0;
         this.y = 200;
         this.velocityX = 0;
@@ -30,6 +31,7 @@ export default class Spidy {
         this.isJumping = false;
         this.isShooting = false;
         this.webs = [];
+        this.bullets = bullets;
         this.direction = 'right';
         this.images = {
             standing: {
@@ -61,11 +63,7 @@ export default class Spidy {
             changeStepShooting: {
                 right: spidy_change_step_shoot,
                 left: Lspidy_change_step_shoot,
-            },
-            sliding: {
-                right: spidy_sliding,
-                left: Lspidy_sliding,
-            },
+            }
         };
 
         this.draw = this.draw.bind(this); 
@@ -92,7 +90,6 @@ export default class Spidy {
         });
 
         window.addEventListener('keyup', (e) => {
-            console.log(e.key);
             switch (e.key) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
@@ -110,16 +107,16 @@ export default class Spidy {
         y: 0,
         width: 15,
         height: 15,
-        speed: 8,
+        speed: 10,
     };
 
     moveLeft() {
-        this.velocityX = -3;
+        this.velocityX = -5;
         this.direction = 'left';
     }
 
     moveRight() {
-        this.velocityX = 3;
+        this.velocityX = 5;
         this.direction = 'right';
     }
 
@@ -137,8 +134,9 @@ export default class Spidy {
             y: this.y + 20,
             direction: this.direction,
         };
-
-        this.webs.push(newWeb);
+        if(this.webs.length < 10 && this.bullets>0){
+            this.bullets--;
+            this.webs.push(newWeb);}
     }
     
     update(base, onBuilding) {
@@ -169,13 +167,12 @@ export default class Spidy {
     
         this.draw();
     }
-    
+
 
     draw() {
         let currentImage;
 
         if (this.shooting) {
-            
             currentImage = this.images.shooting[this.direction];
         } else if (this.isJumping) {
             currentImage = this.images.jumping[this.direction];
@@ -190,6 +187,22 @@ export default class Spidy {
         for (const web of this.webs) {
             this.ctx.drawImage(webshoot, web.x, web.y, 20, 20);
         }
+
+
+        const heartSize = 30;
+        const heartPadding = 4;
+
+        for (let i = 0; i < this.health; i++) {
+            const heartX = (i+1) * (heartSize + heartPadding);
+            const heartY = 40;
+
+            this.ctx.drawImage(spidy_health, heartX, heartY, heartSize, heartSize);
+        }
+
+        this.ctx.drawImage(webshoot,500,40,50,50);
+        this.ctx.font = "30px Comic Sans MS";
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(` - ${this.bullets}`, 550,74);
 
         this.ctx.drawImage(currentImage, this.x, this.y, 50, 50);
     }
