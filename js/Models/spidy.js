@@ -143,7 +143,6 @@ export default class Spidy {
     }
 
     collides(rect1, rect2) {
-        console.log(`${rect1.y} and ${rect2.y + rect2.height} and ${rect2.y}`);
         if(
             rect1.x > rect2.x && rect1.x<rect2.x+30 &&
             rect1.y > rect2.y && rect1.y < rect2.y + rect2.height
@@ -151,7 +150,7 @@ export default class Spidy {
             console.log("Me is here!!");
             return true;
         }
-        else{console.log("not here"); return false;}
+        else{ return false;}
     }
     
     update(base, onBuilding, enemies) {

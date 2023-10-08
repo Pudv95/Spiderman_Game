@@ -1,6 +1,7 @@
 import Spidy from "./Models/spidy.js";
 import Block from "./Models/block.js"
 import { health } from "./config.js";
+import { knife } from "./static/images.js";
 
 
 
@@ -51,6 +52,7 @@ class Building {
         this.width = width;
         this.height = height;
         this.hasEnemy = Math.random() < 0.30;
+        this.lastBulletTime = 0;
     }
 }
 
@@ -71,12 +73,12 @@ function generateBuildings() {
 
 }
 
-
+var bullets = [];
 
 const spidy = new Spidy(context);
 generateBuildings();
 
-function draw(context) {
+function draw(context,currentTime) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
@@ -94,6 +96,12 @@ function draw(context) {
             const enemy = new Block(enemyImage,building.x+building.width/2,building.y-60,60,60);
             enemy.draw(context);
             enemies.push(enemy);
+
+            if (currentTime - building.lastBulletTime >= 2000 && building.x < 800) {
+                const bullet = new Block(knife, building.x+building.width/2,building.y-30,70,15);
+                bullets.push(bullet);
+                building.lastBulletTime = currentTime;
+            }
         }
 
     }
@@ -152,8 +160,8 @@ var i = 0;
 
 var playing = true;
 
-function game() {
-    draw(context);
+function game(currentTime) {
+    draw(context,currentTime);
     if (spidyIsMoving) {
         moveBackground();
     }
@@ -169,9 +177,25 @@ function game() {
         playing = false;
         resetGame();
     }
+    bullets = bullets.filter((bullet) => {
+        bullet.draw(context);
+    
+        if (spidyIsMoving) {
+            bullet.x -= 10;
+        } else {
+            bullet.x -= 5;
+        }
+            if ( bullet.x > spidy.x && bullet.x < spidy.x + 30 && bullet.y > spidy.y && bullet.y < spidy.y+50) {
+            return false;
+        }
+    
+        const bulletIsInCanvas = bullet.x > 0 && bullet.x < canvas.width;
+        
+        return bulletIsInCanvas;
+    });
     spidy.update(buildings[i].y - 50, isSpidyOnBuilding(buildings, spidy),enemies);
     if (playing)
-        requestAnimationFrame(game);
+        requestAnimationFrame((timestamp) => game(timestamp));
 }
 
 window.addEventListener('keydown', (event) => {
