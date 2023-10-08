@@ -108,7 +108,7 @@ export default class Spidy {
     }
 
     moveRight() {
-        this.velocityX = 0.001;
+        this.velocityX = 5;
         this.direction = 'right';
     }
 

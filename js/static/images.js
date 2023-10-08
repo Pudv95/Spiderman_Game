@@ -112,3 +112,13 @@ spidy_sliding.src = "../../assets/spidy/slide.png"
 
 export const Lspidy_sliding = new Image();
 Lspidy_sliding.src = "../../assets/spidy/Lslide.png"
+
+// web
+
+export const webshoot = new Image();
+webshoot.src = "../../assets/spidy/web.png"
+
+// knife
+
+export const knife = new Image();
+knife.src = "../../assets/enemy/knife.png"
