@@ -93,7 +93,6 @@ export default class Spidy {
         });
 
         window.addEventListener('keyup', (e) => {
-            console.log(e.key);
             switch (e.key) {
                 case 'ArrowLeft':
                 case 'ArrowRight':
@@ -140,16 +139,26 @@ export default class Spidy {
         };
 
         this.webs.push(newWeb);
-
         
     }
+
+    collides(rect1, rect2) {
+        console.log(`${rect1.y} and ${rect2.y + rect2.height} and ${rect2.y}`);
+        if(
+            rect1.x > rect2.x && rect1.x<rect2.x+30 &&
+            rect1.y > rect2.y && rect1.y < rect2.y + rect2.height
+        ){
+            console.log("Me is here!!");
+            return true;
+        }
+        else{console.log("not here"); return false;}
+    }
     
-    update(base, onBuilding) {
+    update(base, onBuilding, enemies) {
         if (this.x + this.velocityX < 200 && this.x + this.velocityX > 0) {
             this.x += this.velocityX;
         }
         this.y += this.velocityY;
-    
         if (this.y < base || !onBuilding) {
             this.velocityY += 1;
         } else {
@@ -157,10 +166,23 @@ export default class Spidy {
             this.velocityY = 0;
             this.isJumping = false;
         }
-    
         for (let i = this.webs.length - 1; i >= 0; i--) {
             const web = this.webs[i];
             web.x += (web.direction === 'right' ? 1 : -1) * this.web.speed;
+
+            for (var enemy of enemies) {
+                const enemyRect = {
+                    x: enemy.x,
+                    y: enemy.y,
+                    width: enemy.width,
+                    height: enemy.height,
+                };
+    
+                if (this.collides(web, enemyRect)) {
+                    this.webs.splice(i, 1);
+                    enemies.splice(enemies.indexOf(enemy), 1);
+                }
+            }
 
             if (
                 web.x > this.ctx.canvas.width ||

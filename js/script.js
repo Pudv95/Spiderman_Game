@@ -1,14 +1,17 @@
 import Spidy from "./Models/spidy.js";
+import Block from "./Models/block.js"
 import { health } from "./config.js";
-import {drawEnemy} from "./enemies.js";
 
 
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const context = canvas.getContext("2d");
-var count=1;
+var count = 1;
 canvas.width = 1100;
 canvas.height = 700;
+
+var enemyImage=new Image();
+enemyImage.src="../assets/enemy/venom-original.png";
 
 const spidy_standing = new Image();
 spidy_standing.src = "../../assets/spidy/standing.png";
@@ -28,8 +31,8 @@ let backgroundY = 0;
 const minWidth = 200;
 const maxWidth = 500;
 const backgroundSpeed = 1;
-const buildingSpeed = 6; 
-const buildingSpacing = 120; 
+const buildingSpeed = 6;
+const buildingSpacing = 120;
 
 
 function getRandomHeight() {
@@ -41,18 +44,23 @@ function getRandomWidth() {
     return Math.random() * (maxWidth - minWidth) + minWidth;
 }
 
-function Building(x, y, width, height) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+class Building {
+    constructor(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.hasEnemy = Math.random() < 0.30;
+    }
 }
 
 const buildings = [];
+var enemies = [];
+
 
 function generateBuildings() {
     let x = 0;
-    while (x < maxWidth) { 
+    while (x < maxWidth) {
         const height = getRandomHeight();
         const width = getRandomWidth();
         const y = canvas.height - height;
@@ -64,33 +72,35 @@ function generateBuildings() {
 }
 
 
+
 const spidy = new Spidy(context);
-generateBuildings(); 
+generateBuildings();
 
 function draw(context) {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
-    
+
 
     if (backgroundX <= -canvas.width) {
         backgroundX = 0;
     }
-
+    enemies = [];
     for (const building of buildings) {
-        
+
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
-       if(count % 3 === 0){
-        drawEnemy(context,building.x, building.y, building.width);
-       }
-       count++;
-         
+        if (building.hasEnemy) {
+            const enemy = new Block(enemyImage,building.x+building.width/2,building.y-60,60,60);
+            enemy.draw(context);
+            enemies.push(enemy);
+        }
+
     }
 
-    
 
-    
+
+
     const lastBuilding = buildings[buildings.length - 1];
     if (lastBuilding.x + lastBuilding.width <= canvas.width) {
         const width = getRandomWidth();
@@ -110,31 +120,31 @@ function isSpidyOnBuilding(buildings, spidy) {
             spidyMidpoint < building.x + building.width &&
             spidy.y + 30 < building.y
         ) {
-            return true;  
+            return true;
         }
     }
 
     return false;
 }
 
-function moveBackground(){
+function moveBackground() {
     backgroundX -= backgroundSpeed;
     for (const building of buildings) {
         building.x -= buildingSpeed;
-    } 
+    }
 }
-function resetGame(){
+function resetGame() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX, backgroundY, canvas.width, canvas.height);
     context.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
     spidy.x = - 50;
     spidy.y = -50;
     ctx.font = "30px Comic Sans MS";
-        ctx.fillStyle = "white";
-        ctx.fillText("Nice try", 450, 300);
-        ctx.fillText("Press Enter To Play again", 370, 350);
+    ctx.fillStyle = "white";
+    ctx.fillText("Nice try", 450, 300);
+    ctx.fillText("Press Enter To Play again", 370, 350);
 
-        document.addEventListener("key")
+    document.addEventListener("key")
 }
 
 var spidyIsMoving = false;
@@ -144,30 +154,30 @@ var playing = true;
 
 function game() {
     draw(context);
-    if(spidyIsMoving){
+    if (spidyIsMoving) {
         moveBackground();
     }
-    if(buildings[0].x + buildings[0].width < 0){
+    if (buildings[0].x + buildings[0].width < 0) {
         buildings.shift();
         i--;
     }
-    if(buildings[i].x + buildings[i].width < 220){
+    if (buildings[i].x + buildings[i].width < 220) {
         i++;
     }
     // console.log(spidy.y);
-    if(spidy.y >1100){
+    if (spidy.y > 1100) {
         playing = false;
         resetGame();
     }
-    spidy.update(buildings[i].y - 50,isSpidyOnBuilding(buildings,spidy));
-    if(playing)
+    spidy.update(buildings[i].y - 50, isSpidyOnBuilding(buildings, spidy),enemies);
+    if (playing)
         requestAnimationFrame(game);
 }
 
 window.addEventListener('keydown', (event) => {
     if (event.key == 'ArrowRight' && spidy.x > 180) {
         spidyIsMoving = true;
-    }    
+    }
 });
 window.addEventListener('keyup', (event) => {
     if (event.key == 'ArrowRight') {
@@ -182,8 +192,8 @@ window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowRight') {
         backgroundX -= backgroundSpeed;
         for (const building of buildings) {
-            building.x -= buildingSpeed; 
-        } 
+            building.x -= buildingSpeed;
+        }
     }
 });
 
