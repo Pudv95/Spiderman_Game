@@ -89,6 +89,10 @@ export default class Spidy {
                     this.shoot();
                     this.bullets--;
                 }
+            else
+            {
+                resetGame();
+            }
                     break;
             }
         });
@@ -132,7 +136,10 @@ export default class Spidy {
     }
 
     shoot() {
+        if(!this.shooting){
         this.shooting = true;
+        const audio = new Audio("../assets/audio/shooting-web.mp3");
+        audio.play();
         const newWeb = {
             x: this.x + (this.direction === 'right' ? 50 : -this.web.width),
             y: this.y + 20,
@@ -140,7 +147,7 @@ export default class Spidy {
         };
 
         this.webs.push(newWeb);
-        
+    }
     }
 
     collides(rect1, rect2) {
@@ -153,7 +160,7 @@ export default class Spidy {
         else{ return false; }
     }
     
-    update(base, onBuilding, enemies) {
+    update(base, onBuilding, enemies,buildings) {
         if (this.x + this.velocityX < 200 && this.x + this.velocityX > 0) {
             this.x += this.velocityX;
         }
@@ -181,6 +188,12 @@ export default class Spidy {
                     console.log(enemy.health);
                     this.webs.splice(i, 1);
                     enemy.health--;
+                    const buildingEnemy = buildings.find((building) => building.x+building.width/2 === enemy.x);
+                    if (buildingEnemy) {
+                        buildingEnemy.hasEnemy = false; 
+                    }
+                    
+                   
                 }
             }
 
