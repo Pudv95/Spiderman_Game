@@ -89,6 +89,10 @@ export default class Spidy {
                     this.shoot();
                     this.bullets--;
                 }
+            else
+            {
+                resetGame();
+            }
                     break;
             }
         });
@@ -181,6 +185,7 @@ export default class Spidy {
                     console.log(enemy.health);
                     this.webs.splice(i, 1);
                     enemy.health--;
+                   
                 }
             }
 

@@ -52,9 +52,10 @@ class Building {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.hasEnemy = Math.random() < 0.30;
-        this.hasWebCartridge = Math.random() < 0.05;
+        this.hasEnemy = Math.random() < 0.10;
+        this.hasWebCartridge = Math.random() < 0.85;
         this.lastBulletTime = 0;
+        this.cartridgePickedUp = false;
     }
 }
 
@@ -78,8 +79,9 @@ function generateBuildings() {
 var bullets = [];
 var cartridge = [];
 
-const spidy = new Spidy(context,health,maxBullets);
 generateBuildings(); 
+const spidy = new Spidy(context,health,maxBullets);
+
 
 function draw(context,currentTime) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -98,7 +100,7 @@ function draw(context,currentTime) {
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
         if (building.hasEnemy) {
             const enemy = new Enemy(enemyImage,building.x+building.width/2,building.y-60,60,60,maxEnemyHealth);
-            if(enemy.health>0)
+            if(enemy.health>0) {
                 enemy.draw(context);
             enemies.push(enemy);
 
@@ -108,8 +110,9 @@ function draw(context,currentTime) {
                 building.lastBulletTime = currentTime;
             }
         }
-        if(building.hasWebCartridge && !building.hasEnemy){
-            const webs = new Block(webCartridge,building.x+building.width/2,building.y-150,120,60);
+        }
+        if (building.hasWebCartridge && !building.hasEnemy && !building.cartridgePickedUp) {
+            const webs = new Block(webCartridge, building.x + building.width / 2, building.y - 150, 120, 60);
             cartridge.push(webs);
             webs.draw(context);
         }
@@ -170,6 +173,7 @@ function resetGame() {
         if(e.key == 'Enter' && !playing){
             buildings.length = 0    ;
             generateBuildings();
+            
             spidy.y = buildings[0].y - 50;
             spidy.x = 50;
             i = 0;
@@ -179,7 +183,11 @@ function resetGame() {
         if(e.key == 'Enter'){
             playing = true;
             spidy.health = 10;
+            spidy.velocityX = 0;
+            spidy.velocityY = 0;
+          
             game();
+            
         }
     })
 }
@@ -203,10 +211,22 @@ function game(currentTime) {
         i++;
     }
     if (cartridge.length > 0) {
+        
         const firstCartridge = cartridge[0];
+        
         if(firstCartridge.y < spidy.y + 30 && firstCartridge.y + 20 > spidy.y && spidy.x>firstCartridge.x && spidy.x<firstCartridge.x+30){
-                cartridge.shift();
-                spidy.bullets = maxBullets;
+            spidy.bullets = maxBullets;  
+           
+            const buildingWithCartridge = buildings.find((building) => building.x + building.width / 2 === firstCartridge.x);
+            if (buildingWithCartridge) {
+                buildingWithCartridge.cartridgePickedUp = true; // Set the flag
+            }
+            cartridge.shift();
+            
+           
+            
+                
+                
         }
     }
 
