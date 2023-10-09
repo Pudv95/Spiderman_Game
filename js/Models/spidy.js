@@ -243,7 +243,7 @@ export default class Spidy {
         this.ctx.drawImage(webshoot,500,40,50,50);
         this.ctx.font = "30px Comic Sans MS";
         this.ctx.fillStyle = "white";
-        this.ctx.fillText(` - ${this.bullets}`, 550,74);
+        this.ctx.fillText(` ${this.bullets}`, 550,74);
 
         this.ctx.drawImage(currentImage, this.x, this.y, 50, 50);
     }

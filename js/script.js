@@ -184,12 +184,7 @@ function resetGame() {
     })
     document.addEventListener("keyup",(e)=>{
         if(e.key == 'Enter'){
-            playing = true;
-            spidy.health = 10;
-            spidy.velocityX = 0;
-            spidy.velocityY = 0;
-          
-            game();
+            window.location.reload();
             
         }
     })
