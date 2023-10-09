@@ -52,10 +52,11 @@ class Building {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.hasEnemy = Math.random() < 0.10;
-        this.hasWebCartridge = Math.random() < 0.85;
+        this.hasEnemy = Math.random() < 0.30;
+        this.hasWebCartridge = Math.random() < 0.05;
         this.lastBulletTime = 0;
         this.cartridgePickedUp = false;
+        
     }
 }
 
@@ -100,7 +101,8 @@ function draw(context,currentTime) {
         context.drawImage(buildingImage, building.x, building.y, building.width, building.height);
         if (building.hasEnemy) {
             const enemy = new Enemy(enemyImage,building.x+building.width/2,building.y-60,60,60,maxEnemyHealth);
-            if(enemy.health>0) {
+            if(enemy.health>0 ) {
+          
                 enemy.draw(context);
             enemies.push(enemy);
 
@@ -219,7 +221,7 @@ function game(currentTime) {
            
             const buildingWithCartridge = buildings.find((building) => building.x + building.width / 2 === firstCartridge.x);
             if (buildingWithCartridge) {
-                buildingWithCartridge.cartridgePickedUp = true; // Set the flag
+                buildingWithCartridge.cartridgePickedUp = true; 
             }
             cartridge.shift();
             
@@ -253,7 +255,7 @@ function game(currentTime) {
         
         return bulletIsInCanvas;
     });
-    spidy.update(buildings[i].y - 50, isSpidyOnBuilding(buildings, spidy),enemies);
+    spidy.update(buildings[i].y - 50, isSpidyOnBuilding(buildings, spidy),enemies,buildings);
     if (playing){
         requestAnimationFrame((timestamp) => game(timestamp));
     }

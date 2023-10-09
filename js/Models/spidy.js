@@ -157,7 +157,7 @@ export default class Spidy {
         else{ return false; }
     }
     
-    update(base, onBuilding, enemies) {
+    update(base, onBuilding, enemies,buildings) {
         if (this.x + this.velocityX < 200 && this.x + this.velocityX > 0) {
             this.x += this.velocityX;
         }
@@ -185,6 +185,11 @@ export default class Spidy {
                     console.log(enemy.health);
                     this.webs.splice(i, 1);
                     enemy.health--;
+                    const buildingEnemy = buildings.find((building) => building.x+building.width/2 === enemy.x);
+                    if (buildingEnemy) {
+                        buildingEnemy.hasEnemy = false; 
+                    }
+                    
                    
                 }
             }
