@@ -87,7 +87,7 @@ export default class Spidy {
                 case ' ':
                     if(this.bullets > 0){
                     this.shoot();
-                    this.bullets--;
+                    
                 }
             else
             {
@@ -137,9 +137,10 @@ export default class Spidy {
 
     shoot() {
         if(!this.shooting){
+            this.bullets--;
         this.shooting = true;
-        const audio = new Audio("../assets/audio/shooting-web.mp3");
-        audio.play();
+         const audio = new Audio("../assets/audio/shooting-web.mp3");
+            audio.play();
         const newWeb = {
             x: this.x + (this.direction === 'right' ? 50 : -this.web.width),
             y: this.y + 20,
