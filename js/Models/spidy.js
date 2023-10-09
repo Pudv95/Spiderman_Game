@@ -27,6 +27,7 @@ export default class Spidy {
         this.health = health;
         this.x = 0;
         this.y = 200;
+        this.score = 0;
         this.velocityX = 0;
         this.velocityY = 0;
         this.isJumping = false;
@@ -191,6 +192,7 @@ export default class Spidy {
                     enemy.health--;
                     const buildingEnemy = buildings.find((building) => building.x+building.width/2 === enemy.x);
                     if (buildingEnemy) {
+                        this.score++;
                         buildingEnemy.hasEnemy = false; 
                     }
                     
@@ -244,6 +246,7 @@ export default class Spidy {
         this.ctx.font = "30px Comic Sans MS";
         this.ctx.fillStyle = "white";
         this.ctx.fillText(` ${this.bullets}`, 550,74);
+        this.ctx.fillText(`Score:  ${this.score}`, 850,74);
 
         this.ctx.drawImage(currentImage, this.x, this.y, 50, 50);
     }
