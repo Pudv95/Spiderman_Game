@@ -136,7 +136,10 @@ export default class Spidy {
     }
 
     shoot() {
+        if(!this.shooting){
         this.shooting = true;
+        const audio = new Audio("../assets/audio/shooting-web.mp3");
+        audio.play();
         const newWeb = {
             x: this.x + (this.direction === 'right' ? 50 : -this.web.width),
             y: this.y + 20,
@@ -144,7 +147,7 @@ export default class Spidy {
         };
 
         this.webs.push(newWeb);
-        
+    }
     }
 
     collides(rect1, rect2) {

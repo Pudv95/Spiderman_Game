@@ -35,6 +35,7 @@ const maxWidth = 500;
 const backgroundSpeed = 1;
 const buildingSpeed = 6;
 const buildingSpacing = 120;
+const audio = new Audio("../assets/audio/60-theme-song.mp3");
 
 
 function getRandomHeight() {
@@ -275,6 +276,7 @@ window.addEventListener('keyup', (event) => {
 
 
 window.addEventListener('keydown', (event) => {
+    audio.play();
     if (event.key === 'ArrowRight') {
         backgroundX -= backgroundSpeed;
         for (const building of buildings) {
